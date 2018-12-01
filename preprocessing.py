@@ -18,6 +18,8 @@ def data_preprocessing(df, catVarsDict):
     # Identify if it's weekend
     #df['weekend'] = ((df.date.dt.dayofweek) // 5 == 1).astype(float)
 
+    df = treatment_missings(df)
+
     print("-- Pre-processing done: %s sec --" % np.round(time.time() - t0,1))
 
     return df
@@ -44,5 +46,28 @@ def char_to_int(df, catVarsDict):
                                             return_df = True,
                                             use_cat_names = True)
             df = encoder.fit_transform(df)
+
+    return df
+
+def treatment_missings(df):
+
+    print("\t Percentage Missings Inv 1 ", df.loc[df.inv1.isnull()].shape[0]/df.shape[0])
+    print("\t Percentage Missings Inv 2 ", df.loc[df.inv2.isnull()].shape[0]/df.shape[0])
+    print("\t Percentage Missings Inv 3 ", df.loc[df.inv3.isnull()].shape[0]/df.shape[0])
+    print("\t Percentage Missings Inv 4 ", df.loc[df.inv4.isnull()].shape[0]/df.shape[0])
+    print("\t Percentage Missings Inv 5 ", df.loc[df.inv5.isnull()].shape[0]/df.shape[0])
+    print("\t Percentage Missings Inv 6 ", df.loc[df.inv6.isnull()].shape[0]/df.shape[0])
+
+    # Investments missing to 0
+    df['inv1'].fillna(value = 0.0, inplace = True)
+    df['inv2'].fillna(value = 0.0, inplace = True)
+    df['inv3'].fillna(value = 0.0, inplace = True)
+    df['inv4'].fillna(value = 0.0, inplace = True)
+    df['inv5'].fillna(value = 0.0, inplace = True)
+    df['inv6'].fillna(value = 0.0, inplace = True)
+
+    # Sales missing to 0
+    df['sales1'].fillna(value = 0.0, inplace = True)
+    df['sales2'].fillna(value = 0.0, inplace = True)
 
     return df

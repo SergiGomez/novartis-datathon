@@ -9,7 +9,7 @@ import lightgbm as lgb
 params = {
 
     'walk-forward-cv' : {
-        "n_splits" : 3 # sets the number of folds for cross-validation
+        "n_splits" : 5 # sets the number of folds for cross-validation
     },
 
     'lgb' : {
@@ -34,33 +34,34 @@ def train_model(X, model_name, params = params):
 
     errors = [] # errors array
 
-    values = X['value'].values
+    values_dates = X.date.unique()
 
     tscv = TimeSeriesSplit(n_splits = params['walk-forward-cv']['n_splits'])
 
     # iterating over folds, train model on each, forecast and calculate error
-    for train, val in tscv.split(values):
+    for train, val in tscv.split(values_dates):
 
         print('Train: %s, Validation: %s' % (len(train), len(val)))
 
-        train_X = X.iloc[ train ]
-        val_X = X.iloc[ val ]
+        dates_train = values_dates[train]
+        dates_val = values_dates[val]
 
-        if model_name == 'lgb':
+#        if model_name == 'lgb':
 
-            model = train_lgb(train_X = train_X, val_X = val_X, params = params)
+    #        model = train_lgb(train_X = train_X, val_X = val_X, params = params)
 
-        predictions = model.result[-len(val):]
+    #    predictions = model.result[-len(val):]
 
-        error = rmse(predictions, actual)
+    #    error = rmse(predictions, actual)
 
-        errors.append(error)
+    #    errors.append(error)
 
     print("\t Mean of errors: ", np.mean(np.array(errors)))
 
     print("-- Training done: %s sec --" % np.round(time.time() - t0,1))
 
-    return model
+    #return model
+    return 10
 
 def rmse(y_true, y_pred):
     return round(np.sqrt(mean_squared_error(y_true, y_pred)), 5)
