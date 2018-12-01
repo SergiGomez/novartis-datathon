@@ -7,6 +7,7 @@ import time
 
 import preprocessing
 import models
+import prediction
 
 ## Basic execution params
 path_data = '/Users/sergigomezpalleja/Downloads/'
@@ -43,3 +44,9 @@ train_X.to_csv(filename_preprocessed_data)
 
 # Training
 model = models.train_model(X = train_X, model_name = model_name)
+
+# Prediction
+test_Y = prediction.make_prediction(model = model, X = test_X)
+
+# Prepare submission
+submission = prediction.prepare_submission(test_Y)
