@@ -13,6 +13,10 @@ import prediction
 path_data = '/Users/sergigomezpalleja/Downloads/'
 user_name_version = 'sergi_1'
 print_to_log = True
+do_preprocess = False
+do_modelling = False
+do_prediction = False
+do_submission = False
 
 ## Training parameters
 model_name = 'lgb'
@@ -25,28 +29,31 @@ if print_to_log == True:
 
 t0 = time.time()
 print("\n-- Raw data loading  --")
-train = pd.read_csv(path_data + 'train_1.csv')
-#test = pd.read_csv(path_data + 'key_1.csv')
+train = pd.read_csv(path_data + 'raw_data_master.csv')
 start_time = time.time()
 print("-- Data loading done: %s sec --" % np.round(time.time() - t0,1))
-
 print('\tTraining set shape: {} Rows, {} Columns'.format(*train.shape))
 
-#### Delete that for the competition !!!! ####
-train = train.iloc[0:100,]
-####
-
 # Pre-processing
-train_X = preprocessing.data_preprocessing(df = train)
-print('\tShape train after Pre-processing: ', train_X.shape)
-filename_preprocessed_data = os.path.join(path_data + 'train_preprocessed_' + user_name_version + '.csv')
-train_X.to_csv(filename_preprocessed_data)
+if do_preprocess:
+
+    train_X = preprocessing.data_preprocessing(df = train)
+    print('\tShape train after Pre-processing: ', train_X.shape)
+    filename_preprocessed_data = os.path.join(path_data + 'train_preprocessed_' + user_name_version + '.csv')
+    train_X.to_csv(filename_preprocessed_data)
+
+else:
+    #train_X = pd.read_csv(os.path.join(path_data))
+    #print('\tShape of file Pre-processed: ', train_X.shape)
 
 # Training
-model = models.train_model(X = train_X, model_name = model_name)
+if do_modelling:
+    model = models.train_model(X = train_X, model_name = model_name)
 
 # Prediction
-test_Y = prediction.make_prediction(model = model, X = test_X)
+if do_prediction:
+    test_Y = prediction.make_prediction(model = model, X = test_X)
 
 # Prepare submission
-submission = prediction.prepare_submission(test_Y)
+if do_submission:
+    submission = prediction.prepare_submission(test_Y)

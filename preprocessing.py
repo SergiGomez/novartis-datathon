@@ -8,14 +8,19 @@ def data_preprocessing(df):
     t0 = time.time()
 
     # If data is in Wide format, we need to flatten it
-    df = pd.melt(df[list(df.columns[-50:])+['Page']],
-                        id_vars='Page', var_name='date', value_name='Visits')
+    key_vars= ['Cluster',
+                'Brand Group',
+                'Country',
+                'Function']
+
+    df = pd.melt(df[list(df.columns[-50:])+ key_vars],
+                        id_vars= key_vars, var_name='date', value_name='sales')
 
     # Convert date to datetime format
-    df['date'] = df['date'].astype('datetime64[ns]')
+    #df['date'] = df['date'].astype('datetime64[ns]')
 
     # Identify if it's weekend
-    df['weekend'] = ((df.date.dt.dayofweek) // 5 == 1).astype(float)
+    #df['weekend'] = ((df.date.dt.dayofweek) // 5 == 1).astype(float)
 
     print("-- Pre-processing done: %s sec --" % np.round(time.time() - t0,1))
 
@@ -24,4 +29,3 @@ def data_preprocessing(df):
 def stationarize_series(df):
 
     ads_diff = ads.Ads - ads.Ads.shift(24)
-    
