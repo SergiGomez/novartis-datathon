@@ -15,10 +15,12 @@ def data_preprocessing(df, catVarsDict):
     # Convert date to datetime format
     df['date'] = df['date'].astype('datetime64[ns]')
 
-    # Identify if it's weekend
-    #df['weekend'] = ((df.date.dt.dayofweek) // 5 == 1).astype(float)
+    # Add month and year
+    df['year'] = df['date'].dt.year
+    df['month'] = df['date'].dt.month
 
     df = treatment_missings(df)
+    df = treatment_zeros(df)
 
     print("-- Pre-processing done: %s sec --" % np.round(time.time() - t0,1))
 
@@ -66,8 +68,15 @@ def treatment_missings(df):
     df['inv5'].fillna(value = 0.0, inplace = True)
     df['inv6'].fillna(value = 0.0, inplace = True)
 
-    # Sales missing to 0
-    df['sales1'].fillna(value = 0.0, inplace = True)
-    df['sales2'].fillna(value = 0.0, inplace = True)
+    # Sales 2 missings observations are deleted
+    #df['sales1'].fillna(value = 0.0, inplace = True)
+    #df['sales2'].fillna(value = 0.0, inplace = True)
+    df = df.loc[~df.sales2.isnull()]
+
+    return df
+
+def treatment_zeros(df):
+
+    df = df.loc[df.sales2 != 0.0]
 
     return df
