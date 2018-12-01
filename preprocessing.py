@@ -20,3 +20,8 @@ def data_preprocessing(df):
     print("-- Pre-processing done: %s sec --" % np.round(time.time() - t0,1))
 
     return df
+
+def stationarize_series(df):
+
+    ads_diff = ads.Ads - ads.Ads.shift(24)
+    

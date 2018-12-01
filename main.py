@@ -24,7 +24,7 @@ if print_to_log == True:
     sys.stdout = f
 
 t0 = time.time()
-print("\n-- Data loading  --")
+print("\n-- Raw data loading  --")
 train = pd.read_csv(path_data + 'train_1.csv')
 #test = pd.read_csv(path_data + 'key_1.csv')
 start_time = time.time()

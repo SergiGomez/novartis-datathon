@@ -10,7 +10,7 @@ params = {
 
     'walk-forward-cv' : {
         "n_splits" : 3 # sets the number of folds for cross-validation
-    }
+    },
 
     'lgb' : {
         "objective" : "regression",
@@ -41,10 +41,10 @@ def train_model(X, model_name, params = params):
     # iterating over folds, train model on each, forecast and calculate error
     for train, val in tscv.split(values):
 
-        print('Train: %s, Validation: %s' % (len(train), len(val))
+        print('Train: %s, Validation: %s' % (len(train), len(val)))
 
-        train_X = train_X.iloc[ train, ]
-        val_X = val_X.iloc[ val, ]
+        train_X = X.iloc[ train ]
+        val_X = X.iloc[ val ]
 
         if model_name == 'lgb':
 
@@ -56,7 +56,7 @@ def train_model(X, model_name, params = params):
 
         errors.append(error)
 
-    print("\t Mean of errors: " np.mean(np.array(errors)))
+    print("\t Mean of errors: ", np.mean(np.array(errors)))
 
     print("-- Training done: %s sec --" % np.round(time.time() - t0,1))
 
