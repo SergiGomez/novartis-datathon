@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import time
 
+from sklearn.preprocessing import StandardScaler
+
+import category_encoders
+
 def data_preprocessing(df, catVarsDict):
 
     print('\n-- Data Pre-processing --')
@@ -9,8 +13,8 @@ def data_preprocessing(df, catVarsDict):
 
     df = char_to_int(df, catVarsDict)
 
-    #df = pd.melt(df[list(df.columns[-50:])+ key_vars],
-    #                    id_vars= key_vars, var_name='date', value_name='sales')
+    df = pd.melt(df[list(df.columns[-50:])+ key_vars],
+                        id_vars= key_vars, var_name='date', value_name='sales')
 
     # Convert date to datetime format
     df['date'] = df['date'].astype('datetime64[ns]')
@@ -20,7 +24,8 @@ def data_preprocessing(df, catVarsDict):
     df['month'] = df['date'].dt.month
 
     df = treatment_missings(df)
-    df = treatment_zeros(df)
+
+    df = treatment_target(df, var = 'sales2')
 
     print("-- Pre-processing done: %s sec --" % np.round(time.time() - t0,1))
 
@@ -41,7 +46,6 @@ def char_to_int(df, catVarsDict):
             df = encoder.fit_transform(df)
         elif (value == 'LabelEncoder'):
             df[var] = df[var].str.extract('(\d+)').astype(int)
-            #df[var] = LabelEncoder().fit_transform(df[var])
         elif (value == 'OneHot'):
             encoder = category_encoders.one_hot.OneHotEncoder(cols = [var],
                                             drop_invariant = True,
@@ -68,15 +72,27 @@ def treatment_missings(df):
     df['inv5'].fillna(value = 0.0, inplace = True)
     df['inv6'].fillna(value = 0.0, inplace = True)
 
+    return df
+
+def treatment_zeros_target(df):
+
     # Sales 2 missings observations are deleted
-    #df['sales1'].fillna(value = 0.0, inplace = True)
-    #df['sales2'].fillna(value = 0.0, inplace = True)
     df = df.loc[~df.sales2.isnull()]
+
+    df = df.loc[df.sales2 != 0.0]
+
+    df = df.loc[df.sales2 > 0.0]
 
     return df
 
-def treatment_zeros(df):
+def treatment_target(df, var):
 
-    df = df.loc[df.sales2 != 0.0]
+    df[var] = np.log(df[var])
+
+    return df
+
+def inverse_treatment_target(df, var):
+
+    df[var] = np.exp(df[var])
 
     return df
